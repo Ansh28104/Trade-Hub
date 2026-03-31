@@ -5,6 +5,8 @@ import 'search_screen.dart';
 import 'chat_list_screen.dart';
 import 'orders_screen.dart';
 import 'profile_screen.dart';
+import 'package:tradehub/models/models.dart';
+import 'package:tradehub/services/database_service.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -182,6 +184,7 @@ class _AddListingSheetState extends State<_AddListingSheet> {
   final _descController = TextEditingController();
   String _selectedCategory = 'Electronics';
   String _selectedCondition = 'Like New';
+  bool _isLoading = false;
 
   final List<String> _categories = [
     'Electronics',
@@ -220,210 +223,225 @@ class _AddListingSheetState extends State<_AddListingSheet> {
               color: AppTheme.bgCard,
               borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
             ),
-            child: Column(
+            child: Stack(
               children: [
-                // Handle
-                Container(
-                  width: 40,
-                  height: 4,
-                  margin: const EdgeInsets.only(top: 12),
-                  decoration: BoxDecoration(
-                    color: AppTheme.border,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-                // Header
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-                  child: Row(
-                    children: [
-                      const Text(
-                        'New Listing',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w700,
-                          color: AppTheme.textPrimary,
-                          fontFamily: 'Inter',
-                        ),
+                Column(
+                  children: [
+                    // Handle
+                    Container(
+                      width: 40,
+                      height: 4,
+                      margin: const EdgeInsets.only(top: 12),
+                      decoration: BoxDecoration(
+                        color: AppTheme.border,
+                        borderRadius: BorderRadius.circular(2),
                       ),
-                      const Spacer(),
-                      IconButton(
-                        onPressed: () => Navigator.pop(context),
-                        icon: const Icon(
-                          Icons.close_rounded,
-                          color: AppTheme.textMuted,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                // Form
-                Expanded(
-                  child: SingleChildScrollView(
-                    controller: scrollController,
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Image Upload Area
-                        GestureDetector(
-                          onTap: () => _showSnack('Image picker coming soon!'),
-                          child: Container(
-                            height: 160,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(
-                                color: AppTheme.primary.withOpacity(0.4),
-                                width: 2,
-                                style: BorderStyle.solid,
-                              ),
-                              color: AppTheme.primary.withOpacity(0.05),
-                            ),
-                            child: const Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.add_photo_alternate_outlined,
-                                    size: 48,
-                                    color: AppTheme.primary,
-                                  ),
-                                  SizedBox(height: 8),
-                                  Text(
-                                    'Add Photos',
-                                    style: TextStyle(
-                                      color: AppTheme.primary,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                      fontFamily: 'Inter',
-                                    ),
-                                  ),
-                                  Text(
-                                    'Tap to upload up to 10 images',
-                                    style: TextStyle(
-                                      color: AppTheme.textMuted,
-                                      fontSize: 12,
-                                      fontFamily: 'Inter',
-                                    ),
-                                  ),
-                                ],
-                              ),
+                    ),
+                    // Header
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+                      child: Row(
+                        children: [
+                          const Text(
+                            'New Listing',
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w700,
+                              color: AppTheme.textPrimary,
+                              fontFamily: 'Inter',
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 20),
-                        // Title
-                        _buildLabel('Title'),
-                        const SizedBox(height: 8),
-                        TextField(
-                          controller: _titleController,
-                          style: const TextStyle(
-                            color: AppTheme.textPrimary,
-                            fontFamily: 'Inter',
-                          ),
-                          decoration: const InputDecoration(
-                            hintText: 'What are you selling?',
-                            prefixIcon: Icon(
-                              Icons.title_rounded,
+                          const Spacer(),
+                          IconButton(
+                            onPressed: () => Navigator.pop(context),
+                            icon: const Icon(
+                              Icons.close_rounded,
                               color: AppTheme.textMuted,
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 16),
-                        // Price
-                        _buildLabel('Price (USD)'),
-                        const SizedBox(height: 8),
-                        TextField(
-                          controller: _priceController,
-                          keyboardType: TextInputType.number,
-                          style: const TextStyle(
-                            color: AppTheme.textPrimary,
-                            fontFamily: 'Inter',
-                          ),
-                          decoration: const InputDecoration(
-                            hintText: '0.00',
-                            prefixIcon: Icon(
-                              Icons.attach_money_rounded,
-                              color: AppTheme.textMuted,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        // Category
-                        _buildLabel('Category'),
-                        const SizedBox(height: 8),
-                        _buildDropdown(
-                          _selectedCategory,
-                          _categories,
-                          (v) => setState(() => _selectedCategory = v!),
-                        ),
-                        const SizedBox(height: 16),
-                        // Condition
-                        _buildLabel('Condition'),
-                        const SizedBox(height: 8),
-                        _buildDropdown(
-                          _selectedCondition,
-                          _conditions,
-                          (v) => setState(() => _selectedCondition = v!),
-                        ),
-                        const SizedBox(height: 16),
-                        // Description
-                        _buildLabel('Description'),
-                        const SizedBox(height: 8),
-                        TextField(
-                          controller: _descController,
-                          maxLines: 4,
-                          style: const TextStyle(
-                            color: AppTheme.textPrimary,
-                            fontFamily: 'Inter',
-                          ),
-                          decoration: const InputDecoration(
-                            hintText: 'Describe your item in detail...',
-                            alignLabelWithHint: true,
-                          ),
-                        ),
-                        const SizedBox(height: 28),
-                        // Submit
-                        SizedBox(
-                          width: double.infinity,
-                          height: 54,
-                          child: ElevatedButton(
-                            onPressed: _submitListing,
-                            style: ElevatedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                              padding: EdgeInsets.zero,
-                            ).copyWith(
-                              backgroundColor:
-                                  WidgetStateProperty.all(Colors.transparent),
-                              shadowColor:
-                                  WidgetStateProperty.all(Colors.transparent),
-                            ),
-                            child: Ink(
-                              decoration: BoxDecoration(
-                                gradient: AppTheme.primaryGradient,
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                              child: const Center(
-                                child: Text(
-                                  'Post Listing',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w700,
-                                    color: Colors.white,
-                                    fontFamily: 'Inter',
+                        ],
+                      ),
+                    ),
+                    // Form
+                    Expanded(
+                      child: SingleChildScrollView(
+                        controller: scrollController,
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Image Upload Area
+                            GestureDetector(
+                              onTap: () => _showSnack('Image picker coming soon!'),
+                              child: Container(
+                                height: 160,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(
+                                    color: AppTheme.primary.withOpacity(0.4),
+                                    width: 2,
+                                    style: BorderStyle.solid,
+                                  ),
+                                  color: AppTheme.primary.withOpacity(0.05),
+                                ),
+                                child: const Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.add_photo_alternate_outlined,
+                                        size: 48,
+                                        color: AppTheme.primary,
+                                      ),
+                                      SizedBox(height: 8),
+                                      Text(
+                                        'Add Photos',
+                                        style: TextStyle(
+                                          color: AppTheme.primary,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                          fontFamily: 'Inter',
+                                        ),
+                                      ),
+                                      Text(
+                                        'Tap to upload up to 10 images',
+                                        style: TextStyle(
+                                          color: AppTheme.textMuted,
+                                          fontSize: 12,
+                                          fontFamily: 'Inter',
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
                             ),
-                          ),
+                            const SizedBox(height: 20),
+                            // Title
+                            _buildLabel('Title'),
+                            const SizedBox(height: 8),
+                            TextField(
+                              controller: _titleController,
+                              style: const TextStyle(
+                                color: AppTheme.textPrimary,
+                                fontFamily: 'Inter',
+                              ),
+                              decoration: const InputDecoration(
+                                hintText: 'What are you selling?',
+                                prefixIcon: Icon(
+                                  Icons.title_rounded,
+                                  color: AppTheme.textMuted,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            // Price
+                            _buildLabel('Price (USD)'),
+                            const SizedBox(height: 8),
+                            TextField(
+                              controller: _priceController,
+                              keyboardType: TextInputType.number,
+                              style: const TextStyle(
+                                color: AppTheme.textPrimary,
+                                fontFamily: 'Inter',
+                              ),
+                              decoration: const InputDecoration(
+                                hintText: '0.00',
+                                prefixIcon: Icon(
+                                  Icons.attach_money_rounded,
+                                  color: AppTheme.textMuted,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            // Category
+                            _buildLabel('Category'),
+                            const SizedBox(height: 8),
+                            _buildDropdown(
+                              _selectedCategory,
+                              _categories,
+                              (v) => setState(() => _selectedCategory = v!),
+                            ),
+                            const SizedBox(height: 16),
+                            // Condition
+                            _buildLabel('Condition'),
+                            const SizedBox(height: 8),
+                            _buildDropdown(
+                              _selectedCondition,
+                              _conditions,
+                              (v) => setState(() => _selectedCondition = v!),
+                            ),
+                            const SizedBox(height: 16),
+                            // Description
+                            _buildLabel('Description'),
+                            const SizedBox(height: 8),
+                            TextField(
+                              controller: _descController,
+                              maxLines: 4,
+                              style: const TextStyle(
+                                color: AppTheme.textPrimary,
+                                fontFamily: 'Inter',
+                              ),
+                              decoration: const InputDecoration(
+                                hintText: 'Describe your item in detail...',
+                                alignLabelWithHint: true,
+                              ),
+                            ),
+                            const SizedBox(height: 28),
+                            // Submit
+                            SizedBox(
+                              width: double.infinity,
+                              height: 54,
+                              child: ElevatedButton(
+                                onPressed: _isLoading ? null : _submitListing,
+                                style: ElevatedButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(14),
+                                  ),
+                                  padding: EdgeInsets.zero,
+                                ).copyWith(
+                                  backgroundColor:
+                                      WidgetStateProperty.all(Colors.transparent),
+                                  shadowColor:
+                                      WidgetStateProperty.all(Colors.transparent),
+                                ),
+                                child: Ink(
+                                  decoration: BoxDecoration(
+                                    gradient: _isLoading 
+                                      ? LinearGradient(colors: [AppTheme.bgDark, AppTheme.bgDark.withOpacity(0.5)])
+                                      : AppTheme.primaryGradient,
+                                    borderRadius: BorderRadius.circular(14),
+                                  ),
+                                  child: Center(
+                                    child: _isLoading 
+                                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                                      : const Text(
+                                          'Post Listing',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w700,
+                                            color: Colors.white,
+                                            fontFamily: 'Inter',
+                                          ),
+                                        ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                          ],
                         ),
-                        const SizedBox(height: 20),
-                      ],
+                      ),
+                    ),
+                  ],
+                ),
+                if (_isLoading)
+                  Positioned.fill(
+                    child: Container(
+                      color: Colors.black26,
+                      child: const Center(child: CircularProgressIndicator(color: AppTheme.primary)),
                     ),
                   ),
-                ),
               ],
             ),
           ),
@@ -484,23 +502,52 @@ class _AddListingSheetState extends State<_AddListingSheet> {
     );
   }
 
-  void _submitListing() {
+  void _submitListing() async {
     if (_titleController.text.isEmpty || _priceController.text.isEmpty) {
       _showSnack('Please fill in all required fields');
       return;
     }
-    Navigator.pop(context);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text(
-          '🎉 Listing posted successfully!',
-          style: TextStyle(fontFamily: 'Inter'),
-        ),
-        backgroundColor: AppTheme.accent,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      ),
-    );
+
+    setState(() => _isLoading = true);
+
+    try {
+      final product = Product(
+        id: '', // Firestore will generate this
+        title: _titleController.text,
+        description: _descController.text,
+        price: double.tryParse(_priceController.text) ?? 0.0,
+        category: _selectedCategory,
+        sellerId: 'user_live_01', 
+        sellerName: 'Demo User',
+        sellerRating: 4.8,
+        sellerReviews: 12,
+        imageUrls: ['https://images.unsplash.com/photo-1542291026-7eec264c27ff'], // Default image
+        location: 'New York, US',
+        condition: _selectedCondition,
+        createdAt: DateTime.now(),
+      );
+
+      await DatabaseService().addProduct(product);
+
+      if (mounted) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text(
+              '🎉 Listing posted successfully!',
+              style: TextStyle(fontFamily: 'Inter'),
+            ),
+            backgroundColor: AppTheme.accent,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) _showSnack('Error posting listing: $e');
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 
   void _showSnack(String msg) {

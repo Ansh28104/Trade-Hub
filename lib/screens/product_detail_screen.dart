@@ -706,60 +706,62 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           color: AppTheme.bgCard,
           borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(width: 40, height: 4, decoration: BoxDecoration(color: AppTheme.border, borderRadius: BorderRadius.circular(2))),
-            const SizedBox(height: 20),
-            const Text('Secure Checkout', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: AppTheme.textPrimary, fontFamily: 'Inter')),
-            const SizedBox(height: 20),
-            _buildPaymentOption(Icons.credit_card_rounded, 'Credit / Debit Card', '•••• •••• •••• 4242'),
-            const SizedBox(height: 10),
-            _buildPaymentOption(Icons.account_balance_wallet_rounded, 'PayPal', 'user@example.com'),
-            const SizedBox(height: 10),
-            _buildPaymentOption(Icons.apple_rounded, 'Apple Pay', 'Touch ID'),
-            const SizedBox(height: 24),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(color: AppTheme.bgSurface, borderRadius: BorderRadius.circular(12), border: Border.all(color: AppTheme.border)),
-              child: Column(
-                children: [
-                  _buildPriceLine('Item Price', '\$${p.price.toStringAsFixed(2)}'),
-                  _buildPriceLine('Platform Fee (2%)', '\$${(p.price * 0.02).toStringAsFixed(2)}'),
-                  _buildPriceLine('Shipping', 'Free'),
-                  const Divider(color: AppTheme.border, height: 16),
-                  _buildPriceLine('Total', '\$${(p.price * 1.02).toStringAsFixed(2)}', bold: true),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-            SizedBox(
-              width: double.infinity,
-              height: 54,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: const Text('🎉 Order placed! Track it in Orders.', style: TextStyle(fontFamily: 'Inter')),
-                    backgroundColor: AppTheme.accent,
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  ));
-                },
-                style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)), padding: EdgeInsets.zero).copyWith(
-                  backgroundColor: WidgetStateProperty.all(Colors.transparent),
-                  shadowColor: WidgetStateProperty.all(Colors.transparent),
-                ),
-                child: Ink(
-                  decoration: BoxDecoration(gradient: AppTheme.primaryGradient, borderRadius: BorderRadius.circular(14)),
-                  child: const Center(child: Text('Confirm & Pay', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white, fontFamily: 'Inter'))),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(width: 40, height: 4, decoration: BoxDecoration(color: AppTheme.border, borderRadius: BorderRadius.circular(2))),
+              const SizedBox(height: 20),
+              const Text('Secure Checkout', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: AppTheme.textPrimary, fontFamily: 'Inter')),
+              const SizedBox(height: 20),
+              _buildPaymentOption(Icons.credit_card_rounded, 'Credit / Debit Card', '•••• •••• •••• 4242'),
+              const SizedBox(height: 10),
+              _buildPaymentOption(Icons.account_balance_wallet_rounded, 'PayPal', 'user@example.com'),
+              const SizedBox(height: 10),
+              _buildPaymentOption(Icons.apple_rounded, 'Apple Pay', 'Touch ID'),
+              const SizedBox(height: 24),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(color: AppTheme.bgSurface, borderRadius: BorderRadius.circular(12), border: Border.all(color: AppTheme.border)),
+                child: Column(
+                  children: [
+                    _buildPriceLine('Item Price', '\$${p.price.toStringAsFixed(2)}'),
+                    _buildPriceLine('Platform Fee (2%)', '\$${(p.price * 0.02).toStringAsFixed(2)}'),
+                    _buildPriceLine('Shipping', 'Free'),
+                    const Divider(color: AppTheme.border, height: 16),
+                    _buildPriceLine('Total', '\$${(p.price * 1.02).toStringAsFixed(2)}', bold: true),
+                  ],
                 ),
               ),
-            ),
-            const SizedBox(height: 8),
-            const Text('🔒 Secured by SSL encryption', style: TextStyle(fontSize: 12, color: AppTheme.textMuted, fontFamily: 'Inter')),
-            const SizedBox(height: 16),
-          ],
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                height: 54,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: const Text('🎉 Order placed! Track it in Orders.', style: TextStyle(fontFamily: 'Inter')),
+                      backgroundColor: AppTheme.accent,
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ));
+                  },
+                  style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)), padding: EdgeInsets.zero).copyWith(
+                    backgroundColor: WidgetStateProperty.all(Colors.transparent),
+                    shadowColor: WidgetStateProperty.all(Colors.transparent),
+                  ),
+                  child: Ink(
+                    decoration: BoxDecoration(gradient: AppTheme.primaryGradient, borderRadius: BorderRadius.circular(14)),
+                    child: const Center(child: Text('Confirm & Pay', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white, fontFamily: 'Inter'))),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text('🔒 Secured by SSL encryption', style: TextStyle(fontSize: 12, color: AppTheme.textMuted, fontFamily: 'Inter')),
+              const SizedBox(height: 16),
+            ],
+          ),
         ),
       ),
     );

@@ -4,6 +4,7 @@ import '../data/mock_data.dart';
 import '../models/models.dart';
 import 'product_detail_screen.dart';
 import '../widgets/product_card.dart';
+import '../services/database_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -15,13 +16,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   String _selectedCategory = 'All';
   final ScrollController _scrollController = ScrollController();
-
-  List<Product> get _filteredProducts {
-    if (_selectedCategory == 'All') return MockData.products;
-    return MockData.products
-        .where((p) => p.category == _selectedCategory)
-        .toList();
-  }
+  final DatabaseService _db = DatabaseService();
 
   @override
   void dispose() {
@@ -34,19 +29,29 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(gradient: AppTheme.bgGradient),
-        child: CustomScrollView(
-          controller: _scrollController,
-          slivers: [
-            _buildAppBar(),
-            _buildFeaturedBanner(),
-            _buildSectionHeader('Categories'),
-            _buildCategories(),
-            _buildSectionHeader('🔥 Trending Now'),
-            _buildTrendingSection(),
-            _buildSectionHeader('📦 All Listings'),
-            _buildProductGrid(),
-            const SliverToBoxAdapter(child: SizedBox(height: 20)),
-          ],
+        child: StreamBuilder<List<Product>>(
+          stream: _db.getProducts(),
+          builder: (context, snapshot) {
+            final allProducts = snapshot.data ?? [];
+            final filteredProducts = _selectedCategory == 'All' 
+                ? allProducts 
+                : allProducts.where((p) => p.category == _selectedCategory).toList();
+
+            return CustomScrollView(
+              controller: _scrollController,
+              slivers: [
+                _buildAppBar(),
+                _buildFeaturedBanner(),
+                _buildSectionHeader('Categories'),
+                _buildCategories(),
+                _buildSectionHeader('🔥 Trending Now'),
+                _buildTrendingSection(allProducts.take(4).toList()),
+                _buildSectionHeader('📦 All Listings'),
+                _buildProductGrid(filteredProducts),
+                const SliverToBoxAdapter(child: SizedBox(height: 20)),
+              ],
+            );
+          }
         ),
       ),
     );
@@ -313,18 +318,17 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  SliverToBoxAdapter _buildTrendingSection() {
-    final trending = MockData.products.take(4).toList();
+  SliverToBoxAdapter _buildTrendingSection(List<Product> products) {
     return SliverToBoxAdapter(
       child: SizedBox(
         height: 240,
         child: ListView.separated(
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          itemCount: trending.length,
+          itemCount: products.length,
           separatorBuilder: (_, __) => const SizedBox(width: 12),
           itemBuilder: (context, index) {
-            return _buildTrendingCard(trending[index]);
+            return _buildTrendingCard(products[index]);
           },
         ),
       ),
@@ -448,8 +452,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  SliverPadding _buildProductGrid() {
-    final products = _filteredProducts;
+  SliverPadding _buildProductGrid(List<Product> products) {
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       sliver: SliverGrid(
