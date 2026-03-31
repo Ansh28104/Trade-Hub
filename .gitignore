@@ -1,0 +1,16 @@
+.flutter-plugins
+.flutter-plugins-dependencies
+.dart_tool/
+.packages
+build/
+ios/.generated_files/
+.p4_overrides
+android/key.properties
+*.jks
+*.keystore
+ios/Flutter/Generated.xcconfig
+ios/Flutter/flutter_export_environment.sh
+linux/flutter/generated_plugins.cmake
+macos/Flutter/Generated.xcconfig
+windows/flutter/generated_plugins.cmake
+web/stack_trace_mapper.dart
