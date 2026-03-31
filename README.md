@@ -1,16 +1,3 @@
-# tradehub
+# Trade-Hub
 
-A new Flutter project.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Peer-to-Peer Marketplace App At TradeHub Platforms, individuals struggle to buy and sell second-hand goods efficiently due to lack of trust, poor listing systems, and limited communication channels. To enable seamless transactions, we require a Flutter-based Peer-to-Peer Marketplace App. The app should allow users to list products with images, descriptions, and pricing. Buyers can search, filter, and contact sellers directly via in-app chat. The system should include ratings and reviews to build trust among users. Additionally, secure payment options and order tracking should be provided for a complete marketplace experience. The app must support offline browsing of cached listings and sync updates when online. Key Pain Points to Solve: ● Lack of trust in peer transactions. ● Poor product discovery mechanisms. ● Inefficient communication between buyers and sellers. ● Limited access to secure payment systems. Notes: ● Product listing with images. ● In-app chat system. ● Ratings & reviews. ● Secure payment integration.
